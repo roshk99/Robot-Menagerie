@@ -8,7 +8,7 @@ This document will explain step-by-step the process for obtaining data from the 
 1. The computer you will be using is the one by the wall of the lab
 2. Make sure the Netgear box power cord is plugged in
 3. Make sure the Ethernet cord from the Netgear box is plugged into the computer
-4. Make sure the the USB License Key is plugged into the computer. The USB stick will be either already plugged in, beside the computer, or in the Motion Capture equipment box
+4. Make sure the the USB License Key is plugged into the computer. The USB stick will be in the Motion Capture Box inside a yellow envelope
 5. Make sure the USB cord from the Netgear is plugged into the computer
 6. Open the Motive Software on the computer
 
@@ -29,22 +29,24 @@ This document will explain step-by-step the process for obtaining data from the 
 4. Click `Calibrate`
 5. Save the calibration resutls in the working directory
 
-### Creating the Skeleton (This section needs to be fleshed out)
-1. Put the motion capture suit on the person who will be performing the motion and have him/her stand in the center of the space
-3. Choose your skeleton and make sure that the number of markers on the skeleton is the same number of markers on the person in the suit
-4. Place the markers on the person in the same locations as the image in Motive
-5. Have to do something here with the person in the T position
-6. Save the skeleton data (skel file?)
+### Creating the Skeleton
+1. Open the skeleton pane to view the markerset. Select the Baseline Markerset.
+2. Have the person who will be performing the motion put on the motion capture suit.
+3. Place the markesr on the person in the same locations as the image in Motive. Make sure you rotate the skeleton to ensure you have all the markers.
+4. Have the person stand in the T-position in the center of the space and click `Create`
+5. Save the skeleton data
 
-### Recording a Take (This section needs to be fleshed out)
-1. Something here
+### Recording a Take
+1. Click the record button at the bottom of the screen to record.
+2. Press the same button when done recording.
+3. You can record as many takes as you like. They will appear on the left side labelled with a time-code.
 
-### Exporting the Data (This section needs to be fleshed out)
+### Exporting the Data
 1. `File -> Export`
-2. Export the CSV file format with global coordinates and rotation set to XYZ
-3. Check the CSV file output to make sure that there are no blank columns or unlabeled markers (which you can just manually delete from the CSV or go into Motive to fix)
+2. Export the CSV file format with global coordinates and rotation set to XYZ. You do not need the Rigid Bodies and Rigid Body Markers selected, but make sure Markers is selected.
+3. Export as a BVH file
 4. Make sure you save all files (calibration, skeleton, take, csv, etc.) to your working directory before closing Motive
-5. Unplug the Netgear power cord after you are done using the motion capture system and make sure all markers, suits, etc. are properly put away in the motion capture equipment box
+5. Unplug the Netgear power cord after you are done using the motion capture system and make sure all markers, suits, etc. are properly put away in the motion capture equipment box. Also make sure the USB key is put back in the yellow envelope which goes inside the motion capture equipment box.
 
 ## Step 2: Generating the Simulation 
 
@@ -59,44 +61,38 @@ This document will explain step-by-step the process for obtaining data from the 
  - FFMPEG site: <https://ffmpeg.zeranoe.com/builds/>
 5. An environment to run python (Sublime <https://www.sublimetext.com/3> is nice)
 
-### Overview of the files included in the library
-1. `main.py` is the file you will run to generate the simulation
-2. `options.py` should be the only file you need to modify and contains all the file import, appearance of the movers, and the types of motions for the movers (included in `main.py`)
-3. `analyze_human_data.py` is the file that processes the Motive csv (called by `main.py`)
-4. `animate.py` is the file that actually generates the animation (called by `main.py`)
+### Step 1: Motion Capture Data Computations (Only need to complete once per csv file if you are not adding any more vectors to compute!)
+1. `human_data_import.py` is the file you should run. This calls the file `analyze_human_data.py`.
+2. Modify the `filename` field to include the csv file from Motive, which you should move to the same folder as the repository.
+3. Modify the `data_filename` field to whatever you want the `npz` file containing the computed motion capture data to be called.
+4. The `dim_transfer` field adjusts the xyz coordinates to match the convention of the z-direction pointing up.
+5. The next section includes a list of vectors with the start and end points as the first and second elements. If you wish to add another vector to compute, add it here and make sure you add it to the end of `vectors`
+6. You should be able to run `human_data_import.py` now. It will take a little while and will print out a message when completed. The data will be saved in a `.npz` file in the same directory.
 
-### Options
-1. Mocap File Options
- - Start and ending index of the points used from the specified csv file
-
-2. Animation Options
- - Whether or not to show the animation
-
-3. Video Options
- - Whether to save the video, title on the video, filename of the video, and frames per second (fps) of the video
- - Note that the current code is resampling the data to half the number of desired points and then creating the video with half the frames per second of the original data capture to lower the time to create a video
-
-4. Angle Plot Options
- - Whether to plot the angles and the title of that plot
-
-5. List of Movers
- - `mover_specs` is a list with each element a list containing:
- 	- mover type: human, rollbot, or broombot
- 	- position: numpy array with x,y,z offset of the mover
- 	- motion type: array with motion type (angle or random) as the first element and motion source (i.e. shoulder_hand_right) as a second element
-
-6. FFMPEG Path
- - Make sure you change the value of this to the path to your `ffmpeg.exe` installation file
-```python
-ffmpeg_path = 'C:/ffmpeg/bin/ffmpeg'
-```
-
-### Other Variables in Options
-1. `file_info` contains all the info specified above to be used in other files
-2. `environ_opt` controls how the plot looks in the simulation (elevation, azimuth, etc.)
-3. `color_key` contains colors used for plotting
-4. `paths` contains the indices of nodes to be connected in the human motion capture skeleton plot and which color in `color key` they will be plotted in
-5. `geometry specs` contains properties controlling the appearance of the robots such as height and radius
+### Step 2: Video Generation
+1. `main.py` is the file you want to run.
+2. Uncomment the section (Single Video Generation or Multiple Video Generation based on what you want to do)
+3. The vectors at the top should match the vectors from `human_data_import.py` and are the options you can use for the movers below.
+4. You can add/change the list of positions, which are the options you can use for the movers below.
+5. File Options:
+	* `start_ind` and `end_ind` are the portions of motion capture you wish to use
+	* `filename` should match the `.npz` file you saved from Step 1
+	* `paths` controls what points are connected in the skeleton
+6. Video Options:
+	* `video_filename` is the name of the `.mp4` video you want to create
+	* `video_flag` is True if you want to create a video
+	* `video_fps` is the frames per second of the video. 120fps is what Motive uses
+	* `ffmpeg_path` should be the path to `ffmpeg.exe` on your computer with an extra `\ffmpeg` added
+	* `elevation` and `azimuth` are the perspective of the video in degrees. 15 and -180 are recommended
+	* `plane_start`, `plane_end`, and `height_max` control the ground plane and z-axis limits. -5, 5, and 5 are recommended.
+	* `color_key` must have at least 2 elements and contains the colors scheme for the movers.
+7. Mover Options:
+	* You should include the movers here. The format for each mover type is:
+		* `{'type': 'human', 'pos': mid_pos}`
+		* `{'type': 'broombot', 'pos': left_pos, 'vector': vectors[ind2], 'radius': 0.25, 'height': 0.5, 'n': 10}`
+	* Make sure all movers you want to plot are put into the list `mover_opt`
+8. Multiple Video Generation
+	* There are three different for-loops here for generating videos with different motion capture segments, left-movers, and right-movers. Feel free to customize as you like.
 
 ### Running the Simulation
 Simply run the file `main.py` to create the simulation

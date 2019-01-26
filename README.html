@@ -841,7 +841,7 @@ body .markdown-body
     inset 0 -12px 0 rgba(0, 0, 0, .05);
 }
 
-/* Multimarkdown Critic Blocks */
+/* MultiMarkdown Critic Blocks */
 .markdown-body .critic_mark {
   background: #ff0;
 }
@@ -992,7 +992,7 @@ body .markdown-body
     page-break-after: avoid;
   }
 }
-</style><style>/*github*/
+</style><style>/*GitHub*/
 .codehilite {background-color:#fff;color:#333333;}
 .codehilite .hll {background-color:#ffffcc;}
 .codehilite .c{color:#999988;font-style:italic}
@@ -1063,7 +1063,7 @@ body .markdown-body
 <li>The computer you will be using is the one by the wall of the lab</li>
 <li>Make sure the Netgear box power cord is plugged in</li>
 <li>Make sure the Ethernet cord from the Netgear box is plugged into the computer</li>
-<li>Make sure the the USB License Key is plugged into the computer. The USB stick will be either already plugged in, beside the computer, or in the Motion Capture equipment box</li>
+<li>Make sure the the USB License Key is plugged into the computer. The USB stick will be in the Motion Capture Box inside a yellow envelope</li>
 <li>Make sure the USB cord from the Netgear is plugged into the computer</li>
 <li>Open the Motive Software on the computer</li>
 </ol>
@@ -1086,25 +1086,27 @@ body .markdown-body
 <li>Click <code>Calibrate</code></li>
 <li>Save the calibration resutls in the working directory</li>
 </ol>
-<h3 id="creating-the-skeleton-this-section-needs-to-be-fleshed-out">Creating the Skeleton (This section needs to be fleshed out)<a class="headerlink" href="#creating-the-skeleton-this-section-needs-to-be-fleshed-out" title="Permanent link"></a></h3>
+<h3 id="creating-the-skeleton">Creating the Skeleton<a class="headerlink" href="#creating-the-skeleton" title="Permanent link"></a></h3>
 <ol>
-<li>Put the motion capture suit on the person who will be performing the motion and have him/her stand in the center of the space</li>
-<li>Choose your skeleton and make sure that the number of markers on the skeleton is the same number of markers on the person in the suit</li>
-<li>Place the markers on the person in the same locations as the image in Motive</li>
-<li>Have to do something here with the person in the T position</li>
-<li>Save the skeleton data (skel file?)</li>
+<li>Open the skeleton pane to view the markerset. Select the Baseline Markerset.</li>
+<li>Have the person who will be performing the motion put on the motion capture suit.</li>
+<li>Place the markesr on the person in the same locations as the image in Motive. Make sure you rotate the skeleton to ensure you have all the markers.</li>
+<li>Have the person stand in the T-position in the center of the space and click <code>Create</code></li>
+<li>Save the skeleton data</li>
 </ol>
-<h3 id="recording-a-take-this-section-needs-to-be-fleshed-out">Recording a Take (This section needs to be fleshed out)<a class="headerlink" href="#recording-a-take-this-section-needs-to-be-fleshed-out" title="Permanent link"></a></h3>
+<h3 id="recording-a-take">Recording a Take<a class="headerlink" href="#recording-a-take" title="Permanent link"></a></h3>
 <ol>
-<li>Something here</li>
+<li>Click the record button at the bottom of the screen to record.</li>
+<li>Press the same button when done recording.</li>
+<li>You can record as many takes as you like. They will appear on the left side labelled with a time-code.</li>
 </ol>
-<h3 id="exporting-the-data-this-section-needs-to-be-fleshed-out">Exporting the Data (This section needs to be fleshed out)<a class="headerlink" href="#exporting-the-data-this-section-needs-to-be-fleshed-out" title="Permanent link"></a></h3>
+<h3 id="exporting-the-data">Exporting the Data<a class="headerlink" href="#exporting-the-data" title="Permanent link"></a></h3>
 <ol>
 <li><code>File -&gt; Export</code></li>
-<li>Export the CSV file format with global coordinates and rotation set to XYZ</li>
-<li>Check the CSV file output to make sure that there are no blank columns or unlabeled markers (which you can just manually delete from the CSV or go into Motive to fix)</li>
+<li>Export the CSV file format with global coordinates and rotation set to XYZ. You do not need the Rigid Bodies and Rigid Body Markers selected, but make sure Markers is selected.</li>
+<li>Export as a BVH file</li>
 <li>Make sure you save all files (calibration, skeleton, take, csv, etc.) to your working directory before closing Motive</li>
-<li>Unplug the Netgear power cord after you are done using the motion capture system and make sure all markers, suits, etc. are properly put away in the motion capture equipment box</li>
+<li>Unplug the Netgear power cord after you are done using the motion capture system and make sure all markers, suits, etc. are properly put away in the motion capture equipment box. Also make sure the USB key is put back in the yellow envelope which goes inside the motion capture equipment box.</li>
 </ol>
 <h2 id="step-2-generating-the-simulation">Step 2: Generating the Simulation<a class="headerlink" href="#step-2-generating-the-simulation" title="Permanent link"></a></h2>
 <h3 id="requirements">Requirements<a class="headerlink" href="#requirements" title="Permanent link"></a></h3>
@@ -1119,55 +1121,50 @@ body .markdown-body
  - FFMPEG site: <a href="https://ffmpeg.zeranoe.com/builds/">https://ffmpeg.zeranoe.com/builds/</a></li>
 <li>An environment to run python (Sublime <a href="https://www.sublimetext.com/3">https://www.sublimetext.com/3</a> is nice)</li>
 </ol>
-<h3 id="overview-of-the-files-included-in-the-library">Overview of the files included in the library<a class="headerlink" href="#overview-of-the-files-included-in-the-library" title="Permanent link"></a></h3>
+<h3 id="step-1-motion-capture-data-computations-only-need-to-complete-once-per-csv-file-if-you-are-not-adding-any-more-vectors-to-compute">Step 1: Motion Capture Data Computations (Only need to complete once per csv file if you are not adding any more vectors to compute!)<a class="headerlink" href="#step-1-motion-capture-data-computations-only-need-to-complete-once-per-csv-file-if-you-are-not-adding-any-more-vectors-to-compute" title="Permanent link"></a></h3>
 <ol>
-<li><code>main.py</code> is the file you will run to generate the simulation</li>
-<li><code>options.py</code> should be the only file you need to modify and contains all the file import, appearance of the movers, and the types of motions for the movers (included in <code>main.py</code>)</li>
-<li><code>analyze_human_data.py</code> is the file that processes the Motive csv (called by <code>main.py</code>)</li>
-<li><code>animate.py</code> is the file that actually generates the animation (called by <code>main.py</code>)</li>
+<li><code>human_data_import.py</code> is the file you should run. This calls the file <code>analyze_human_data.py</code>.</li>
+<li>Modify the <code>filename</code> field to include the csv file from Motive, which you should move to the same folder as the repository.</li>
+<li>Modify the <code>data_filename</code> field to whatever you want the <code>npz</code> file containing the computed motion capture data to be called.</li>
+<li>The <code>dim_transfer</code> field adjusts the xyz coordinates to match the convention of the z-direction pointing up.</li>
+<li>The next section includes a list of vectors with the start and end points as the first and second elements. If you wish to add another vector to compute, add it here and make sure you add it to the end of <code>vectors</code></li>
+<li>You should be able to run <code>human_data_import.py</code> now. It will take a little while and will print out a message when completed. The data will be saved in a <code>.npz</code> file in the same directory.</li>
 </ol>
-<h3 id="options">Options<a class="headerlink" href="#options" title="Permanent link"></a></h3>
+<h3 id="step-2-video-generation">Step 2: Video Generation<a class="headerlink" href="#step-2-video-generation" title="Permanent link"></a></h3>
 <ol>
-<li>
-<p>Mocap File Options
- - Start and ending index of the points used from the specified csv file</p>
-</li>
-<li>
-<p>Animation Options
- - Whether or not to show the animation</p>
-</li>
-<li>
-<p>Video Options
- - Whether to save the video, title on the video, filename of the video, and frames per second (fps) of the video
- - Note that the current code is resampling the data to half the number of desired points and then creating the video with half the frames per second of the original data capture to lower the time to create a video</p>
-</li>
-<li>
-<p>Angle Plot Options
- - Whether to plot the angles and the title of that plot</p>
-</li>
-<li>
-<p>List of Movers
- - <code>mover_specs</code> is a list with each element a list containing:</p>
-<ul>
-<li>mover type: human, rollbot, or broombot</li>
-<li>position: numpy array with x,y,z offset of the mover</li>
-<li>motion type: array with motion type (angle or random) as the first element and motion source (i.e. shoulder_hand_right) as a second element</li>
+<li><code>main.py</code> is the file you want to run.</li>
+<li>Uncomment the section (Single Video Generation or Multiple Video Generation based on what you want to do)</li>
+<li>The vectors at the top should match the vectors from <code>human_data_import.py</code> and are the options you can use for the movers below.</li>
+<li>You can add/change the list of positions, which are the options you can use for the movers below.</li>
+<li>File Options:<ul>
+<li><code>start_ind</code> and <code>end_ind</code> are the portions of motion capture you wish to use</li>
+<li><code>filename</code> should match the <code>.npz</code> file you saved from Step 1</li>
+<li><code>paths</code> controls what points are connected in the skeleton</li>
 </ul>
 </li>
-<li>
-<p>FFMPEG Path
- - Make sure you change the value of this to the path to your <code>ffmpeg.exe</code> installation file
-<div class="codehilite"><pre><span class="n">ffmpeg_path</span> <span class="o">=</span> <span class="s">&#39;C:/ffmpeg/bin/ffmpeg&#39;</span>
-</pre></div></p>
+<li>Video Options:<ul>
+<li><code>video_filename</code> is the name of the <code>.mp4</code> video you want to create</li>
+<li><code>video_flag</code> is True if you want to create a video</li>
+<li><code>video_fps</code> is the frames per second of the video. 120fps is what Motive uses</li>
+<li><code>ffmpeg_path</code> should be the path to <code>ffmpeg.exe</code> on your computer with an extra <code>\ffmpeg</code> added</li>
+<li><code>elevation</code> and <code>azimuth</code> are the perspective of the video in degrees. 15 and -180 are recommended</li>
+<li><code>plane_start</code>, <code>plane_end</code>, and <code>height_max</code> control the ground plane and z-axis limits. -5, 5, and 5 are recommended.</li>
+<li><code>color_key</code> must have at least 2 elements and contains the colors scheme for the movers.</li>
+</ul>
 </li>
-</ol>
-<h3 id="other-variables-in-options">Other Variables in Options<a class="headerlink" href="#other-variables-in-options" title="Permanent link"></a></h3>
-<ol>
-<li><code>file_info</code> contains all the info specified above to be used in other files</li>
-<li><code>environ_opt</code> controls how the plot looks in the simulation (elevation, azimuth, etc.)</li>
-<li><code>color_key</code> contains colors used for plotting</li>
-<li><code>paths</code> contains the indices of nodes to be connected in the human motion capture skeleton plot and which color in <code>color key</code> they will be plotted in</li>
-<li><code>geometry specs</code> contains properties controlling the appearance of the robots such as height and radius</li>
+<li>Mover Options:<ul>
+<li>You should include the movers here. The format for each mover type is:<ul>
+<li><code>{'type': 'human', 'pos': mid_pos}</code></li>
+<li><code>{'type': 'broombot', 'pos': left_pos, 'vector': vectors[ind2], 'radius': 0.25, 'height': 0.5, 'n': 10}</code></li>
+</ul>
+</li>
+<li>Make sure all movers you want to plot are put into the list <code>mover_opt</code></li>
+</ul>
+</li>
+<li>Multiple Video Generation<ul>
+<li>There are three different for-loops here for generating videos with different motion capture segments, left-movers, and right-movers. Feel free to customize as you like.</li>
+</ul>
+</li>
 </ol>
 <h3 id="running-the-simulation">Running the Simulation<a class="headerlink" href="#running-the-simulation" title="Permanent link"></a></h3>
 <p>Simply run the file <code>main.py</code> to create the simulation</p></article></body></html>

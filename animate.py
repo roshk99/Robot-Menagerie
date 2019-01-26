@@ -2,13 +2,12 @@ import matplotlib.pyplot as plt
 from matplotlib import animation
 from mpl_toolkits.mplot3d import Axes3D
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection, Line3DCollection
-from options import *
 plt.rcParams['animation.ffmpeg_path'] = ffmpeg_path
 
 #This file actually generates the simulation
 
 def run_animation(data, min_lim, max_lim, num_points):
-
+	#print(num_points)
 	#Find the square that encloses all the motion
 	plane_start = min(min_lim[0:2])
 	plane_end = max(max_lim[0:2])
@@ -16,7 +15,7 @@ def run_animation(data, min_lim, max_lim, num_points):
 	#Initialize the 3D Figure
 	fig = plt.figure(1)
 	ax1 = fig.add_subplot(111, projection='3d')
-	ax1.set_title(file_info['plot_title'])
+	ax1.set_title(file_info['video_title'])
 	
 	#Generate the square stage
 	xx, yy = np.meshgrid(np.linspace(plane_start,plane_end,10), 
@@ -170,7 +169,7 @@ def run_animation(data, min_lim, max_lim, num_points):
 			surface = ax1.plot_surface(Xlist[surfnum], Ylist[surfnum], Zlist[surfnum], \
 				color=color_key[ind])
 			surfaces2[surfnum] = surface
-
+		#plt.savefig(str(i)+".png")
 		return lines + surfaces + surfaces2
 
 	#Call the animator
