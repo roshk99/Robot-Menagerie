@@ -1056,8 +1056,8 @@ body .markdown-body
 .codehilite .il{color:#009999}
 .codehilite .gc{color:#999;background-color:#EAF2F5}
 </style><title>README</title></head><body><article class="markdown-body"><h1 id="dancing-robot-menagerie">Dancing Robot Menagerie<a class="headerlink" href="#dancing-robot-menagerie" title="Permanent link"></a></h1>
-<p>This document will explain step-by-step the process for obtaining data from the OptiTrack system and using the provided python code library to generate a dancing robot menagerie. The two types of robot simulations currently included are the Rollbot and the Broombot</p>
-<h2 id="step-1-record-data-using-the-optitrack-system">Step 1: Record Data using the OptiTrack System<a class="headerlink" href="#step-1-record-data-using-the-optitrack-system" title="Permanent link"></a></h2>
+<p>This document will explain step-by-step the process for obtaining data from the OptiTrack system and using the provided python code library to generate a dancing robot menagerie. The type of robot available for plotting is the Broombot</p>
+<h2 id="step-1-record-data-using-the-optitrack-system-in-rad-lab">Step 1: Record Data using the OptiTrack System in RAD Lab<a class="headerlink" href="#step-1-record-data-using-the-optitrack-system-in-rad-lab" title="Permanent link"></a></h2>
 <h3 id="setting-up-the-computer">Setting up the computer<a class="headerlink" href="#setting-up-the-computer" title="Permanent link"></a></h3>
 <ol>
 <li>The computer you will be using is the one by the wall of the lab</li>
@@ -1145,11 +1145,12 @@ body .markdown-body
 <li>Video Options:<ul>
 <li><code>video_filename</code> is the name of the <code>.mp4</code> video you want to create</li>
 <li><code>video_flag</code> is True if you want to create a video</li>
+<li><code>img_flag</code> is True if you want to save each frame as an image</li>
 <li><code>video_fps</code> is the frames per second of the video. 120fps is what Motive uses</li>
 <li><code>ffmpeg_path</code> should be the path to <code>ffmpeg.exe</code> on your computer with an extra <code>\ffmpeg</code> added</li>
 <li><code>elevation</code> and <code>azimuth</code> are the perspective of the video in degrees. 15 and -180 are recommended</li>
-<li><code>plane_start</code>, <code>plane_end</code>, and <code>height_max</code> control the ground plane and z-axis limits. -5, 5, and 5 are recommended.</li>
-<li><code>color_key</code> must have at least 2 elements and contains the colors scheme for the movers.</li>
+<li><code>plane_start</code>, <code>plane_end</code>, and <code>height_max</code> control the ground plane and z-axis limits. -5, 5, and 5 are recommended</li>
+<li><code>color_key</code> must have at least 2 elements and contains the colors scheme for the movers</li>
 </ul>
 </li>
 <li>Mover Options:<ul>

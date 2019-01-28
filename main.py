@@ -19,7 +19,7 @@ right_pos = np.array([[0,-2,0]])
 
 #File Options
 start_ind = 0
-end_ind = 1
+end_ind = 3
 filename = 'mocapdata01.npz'
 paths = [('BackTop','HeadTop'),('BackLeft','BackRight'),\
 		('WaistLBack','WaistRBack'),\
@@ -39,6 +39,7 @@ file_opt = {'section': range(start_ind,end_ind), \
 #Video Options
 video_filename = 'test.mp4'
 video_flag = True
+img_flag = True
 video_title = ''
 video_fps = 120
 ffmpeg_path = 'C:/ffmpeg/bin/ffmpeg'
@@ -53,11 +54,19 @@ video_opt = {'video_filename': video_filename, 'video_flag': video_flag, \
 			'ffmpeg_path': ffmpeg_path, 'elevation': elevation, \
 			'azimuth': azimuth, 'plane_start': plane_start, \
 			'plane_end': plane_end, 'height_max': height_max, \
-			'color_key': color_key}
+			'color_key': color_key, 'img_flag': img_flag}
 
 #Mover Options
 mover1 = {'type': 'human', 'pos': mid_pos}
-mover_opt = [mover1]
+mover2 = {'type': 'broombot', 'pos': left_pos + left_pos, 'vector': verticality_vec, \
+			'radius': 0.25, 'height': 0.5, 'n': 10}
+mover3 = {'type': 'broombot', 'pos': left_pos, 'vector': arm_left, \
+			'radius': 0.25, 'height': 0.5, 'n': 10}
+mover4 = {'type': 'broombot', 'pos': right_pos, 'vector': arm_right, \
+			'radius': 0.25, 'height': 0.5, 'n': 10}
+mover5 = {'type': 'broombot', 'pos': right_pos + right_pos, 'vector': leg_left, \
+			'radius': 0.25, 'height': 0.5, 'n': 10}
+mover_opt = [mover1, mover2, mover3, mover4, mover5]
 
 run_animation(file_opt, video_opt, mover_opt)
 end = time.clock()

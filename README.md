@@ -1,8 +1,8 @@
 # Dancing Robot Menagerie
 
-This document will explain step-by-step the process for obtaining data from the OptiTrack system and using the provided python code library to generate a dancing robot menagerie. The two types of robot simulations currently included are the Rollbot and the Broombot
+This document will explain step-by-step the process for obtaining data from the OptiTrack system and using the provided python code library to generate a dancing robot menagerie. The type of robot available for plotting is the Broombot
 
-## Step 1: Record Data using the OptiTrack System
+## Step 1: Record Data using the OptiTrack System in RAD Lab
 
 ### Setting up the computer
 1. The computer you will be using is the one by the wall of the lab
@@ -81,11 +81,12 @@ This document will explain step-by-step the process for obtaining data from the 
 6. Video Options:
 	* `video_filename` is the name of the `.mp4` video you want to create
 	* `video_flag` is True if you want to create a video
+	* `img_flag` is True if you want to save each frame as an image
 	* `video_fps` is the frames per second of the video. 120fps is what Motive uses
 	* `ffmpeg_path` should be the path to `ffmpeg.exe` on your computer with an extra `\ffmpeg` added
 	* `elevation` and `azimuth` are the perspective of the video in degrees. 15 and -180 are recommended
-	* `plane_start`, `plane_end`, and `height_max` control the ground plane and z-axis limits. -5, 5, and 5 are recommended.
-	* `color_key` must have at least 2 elements and contains the colors scheme for the movers.
+	* `plane_start`, `plane_end`, and `height_max` control the ground plane and z-axis limits. -5, 5, and 5 are recommended
+	* `color_key` must have at least 2 elements and contains the colors scheme for the movers
 7. Mover Options:
 	* You should include the movers here. The format for each mover type is:
 		* `{'type': 'human', 'pos': mid_pos}`

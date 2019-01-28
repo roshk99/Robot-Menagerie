@@ -66,10 +66,10 @@ def generate_broombot_traj(mover, angles, trans_traj):
 		for ii in range(num_points):
 			A_b_x = rrange(-np.pi/2, np.pi/2)
 			A_b_y = rrange(-np.pi/2, np.pi/2)
-			#th_x.append(A_b_x*np.sin(omega_b*ii))
-			#th_y.append(A_b_y*np.sin(omega_b*ii))
-			th_x.append(0)
-			th_y.append(-np.pi/4)
+			th_x.append(A_b_x*np.sin(omega_b*ii))
+			th_y.append(A_b_y*np.sin(omega_b*ii))
+			th_x.append(th_x)
+			th_y.append(th_y)
 	else:
 		th_x = angles[mover['vector']]['th_x'] + np.pi/2
 		th_y = angles[mover['vector']]['th_y'] + np.pi/2
@@ -259,7 +259,8 @@ def save_video(animation_obj, file_opt, video_opt):
 		for surfnum, surface in enumerate(surfaces):
 			surface.set_verts(vertlist[surfnum])
 
-		plt.savefig(str(i)+".png")
+		if video_opt['img_flag']:
+			plt.savefig(str(i)+".png")
 
 		#Update the data for all the surfaces
 		for surfnum, surface in enumerate(surfaces2):
