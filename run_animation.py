@@ -5,23 +5,31 @@ from random import uniform as rrange
 from matplotlib import animation
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection, Line3DCollection
 
-def run_animation(file_opt, video_opt, mover_opt):
-	#Analyze the motion capture csv file
-	angles, node_traj, trans_traj = import_human_data(file_opt)
+def run_animation(video_opt, mover_opt):
+	#Check if the sections are all the same length
+	test_length = len(mover_opt[0]['section'])
+	for mover in mover_opt:
+		if not len(mover['section']) == test_length:
+			print('All sections must be the same length')
+			return
 
 	animation_obj = []
 	for mover in mover_opt:
+		#Analyze the motion capture csv file
+		angles, node_traj, trans_traj = import_human_data(mover['filename'], mover['section'])
+
 		if mover['type'] == 'human':
-			mover['traj'] = generate_human_traj(node_traj, mover, file_opt)
-		if mover['type'] == 'broombot':
+			mover['traj'] = generate_human_traj(node_traj, mover)
+		elif mover['type'] == 'broombot':
 			mover['traj'] = generate_broombot_traj(mover, angles, trans_traj)
+		elif mover['type'] == 'rollbot':
+			mover['traj'] = generate_rollbot_traj(mover, angles, trans_traj)
 		animation_obj.append(mover)
 
-	if video_opt['video_flag']:
-		save_video(animation_obj, file_opt, video_opt)
+	animate_movers(animation_obj, video_opt)
 
-def import_human_data(file_opt):
-	with np.load(file_opt['filename']) as f:
+def import_human_data(filename, section):
+	with np.load(filename) as f:
 		angles = f['angles']
 		node_traj = f['node_traj']
 		trans_traj = f['trans_traj']
@@ -31,25 +39,25 @@ def import_human_data(file_opt):
 
 	cur_angles = {}
 	for angle_name, angle in angles.items():
-		cur_angles[angle_name] = {'th_x': angle['th_x'][file_opt['section']], \
-				'th_y': angle['th_y'][file_opt['section']]}
+		cur_angles[angle_name] = {'th_x': angle['th_x'][section], \
+				'th_y': angle['th_y'][section]}
 
 	cur_node_traj = {}
 	for node_name, node in node_traj.items():
-		cur_node_traj[node_name] = node[file_opt['section'],:]
+		cur_node_traj[node_name] = node[section,:]
 
-	cur_trans_traj = trans_traj[file_opt['section'],:]
+	cur_trans_traj = trans_traj[section,:]
 	cur_trans_traj[:,2] = 0
 
 	return cur_angles, cur_node_traj, cur_trans_traj
 
-def generate_human_traj(node_traj, mover, file_opt):
+def generate_human_traj(node_traj, mover):
 
 	#human_traj[time, path, 3 dim, 2 points]
-	human_traj = np.zeros((len(file_opt['section']), \
-		len(file_opt['paths']), 3, 2))
+	human_traj = np.zeros((len(mover['section']), \
+		len(mover['paths']), 3, 2))
 
-	for path_num, path in enumerate(file_opt['paths']):
+	for path_num, path in enumerate(mover['paths']):
 		start_point = node_traj[path[0]] + mover['pos']
 		end_point = node_traj[path[1]] + mover['pos']
 		human_traj[:,path_num,:,0] = start_point + rrange(-0.01, 0.01)
@@ -68,8 +76,6 @@ def generate_broombot_traj(mover, angles, trans_traj):
 			A_b_y = rrange(-np.pi/2, np.pi/2)
 			th_x.append(A_b_x*np.sin(omega_b*ii))
 			th_y.append(A_b_y*np.sin(omega_b*ii))
-			th_x.append(th_x)
-			th_y.append(th_y)
 	else:
 		th_x = angles[mover['vector']]['th_x'] + np.pi/2
 		th_y = angles[mover['vector']]['th_y'] + np.pi/2
@@ -159,7 +165,82 @@ def generate_broombot_traj(mover, angles, trans_traj):
 
 	return traj
 
-def save_video(animation_obj, file_opt, video_opt):
+def generate_rollbot_traj(mover, angles, trans_traj):
+	num_points = angles[('WaistRBack', 'BackRight')]['th_x'].shape[0]
+	if mover['vector'][0] == 'Random':
+		omega_r = 1/5000
+		th = []
+		for ii in range(num_points):
+			A_r = rrange(-np.pi/2, np.pi/2)
+			th.append(A_r*np.sin(omega_r*ii) + np.pi) 
+	else:
+		th = angles[mover['vector']]['th_x'] + angles[mover['vector']]['th_y']
+
+	#Compute the 2D rotation matrix for each angle
+	R = np.array([[np.cos(th), -np.sin(th)], [np.sin(th), np.cos(th)]])
+	R = np.transpose(R, (2,0,1))
+
+	#Get the geometric parameters of the rollbot 
+	radius = mover['radius']
+	stretch = mover['stretch']
+	height = mover['height']
+	hor_trans = trans_traj
+	hor_trans[:,2] = 0
+	trans = hor_trans + mover['pos']
+
+	#Get the (x,y) vertices of the triangular prism (one half)
+	p1 = np.array([radius*stretch, 0])[:,np.newaxis]
+	p1 = np.matmul(R,p1) + trans[:,0:2,np.newaxis]
+	p2 = np.array([-radius, radius])[:,np.newaxis]
+	p2 = np.matmul(R,p2) + trans[:,0:2,np.newaxis]
+	p3 = np.array([-radius, 0])[:,np.newaxis]
+	p3 = np.matmul(R,p3) + trans[:,0:2,np.newaxis]
+
+	#Get the z value for the top and bottom
+	low_z = np.zeros((p1.shape[0], 1, 1))
+	high_z = height*np.ones((p1.shape[0], 1, 1))
+	
+	#Get all 6 3d points
+	p1_low = np.concatenate((p1,low_z), axis=1)
+	p1_high = np.concatenate((p1,high_z), axis=1)
+	p2_low = np.concatenate((p2,low_z), axis=1)
+	p2_high = np.concatenate((p2,high_z), axis=1)
+	p3_low = np.concatenate((p3,low_z), axis=1)
+	p3_high = np.concatenate((p3,high_z), axis=1)
+
+	#Store the vertices of faces in an array
+	verts1 = [ [p1_low, p2_low, p3_low], [p1_high, p2_high, p3_high], 
+			[p1_low, p1_high, p2_high, p1_low], [p1_low, p1_high, p3_high, p3_low], 
+			[p2_low, p2_high, p3_high, p3_low]]
+
+	#Get the (x,y) vertices of the triangular prism (other half)
+	p1 = np.array([radius*stretch, 0])[:,np.newaxis]
+	p1 = np.matmul(R,p1) + trans[:,0:2,np.newaxis]
+	p2 = np.array([-radius, 0])[:,np.newaxis]
+	p2 = np.matmul(R,p2) + trans[:,0:2,np.newaxis]
+	p3 = np.array([-radius, -radius])[:,np.newaxis]
+	p3 = np.matmul(R,p3) + trans[:,0:2,np.newaxis]
+	low_z = np.zeros((p1.shape[0], 1, 1))
+	
+	#Get all 6 3d points
+	p1_low = np.concatenate((p1,low_z), axis=1)
+	p1_high = np.concatenate((p1,high_z), axis=1)
+	p2_low = np.concatenate((p2,low_z), axis=1)
+	p2_high = np.concatenate((p2,high_z), axis=1)
+	p3_low = np.concatenate((p3,low_z), axis=1)
+	p3_high = np.concatenate((p3,high_z), axis=1)
+	
+	#Store the vertices of faces in an array
+	verts2 = [ [p1_low, p2_low, p3_low], [p1_high, p2_high, p3_high], 
+			[p1_low, p1_high, p2_high, p1_low], [p1_low, p1_high, p3_high, p3_low], 
+			[p2_low, p2_high, p3_high, p3_low]]
+
+	#Store the two halves of the triangular prism in an array (keys are color indices)
+	traj = {0: verts1, 1: verts2}
+
+	return traj
+
+def animate_movers(animation_obj, video_opt):
 	plt.rcParams['animation.ffmpeg_path'] = video_opt['ffmpeg_path']
 
 	#Initialize the 3D Figure
@@ -204,11 +285,18 @@ def save_video(animation_obj, file_opt, video_opt):
 				surfaces.append(surface)
 			lobj = ax1.plot([],[],[],lw=2, color=video_opt['color_key'][0])[0]
 			lines.append(lobj)
+		if mover['type'] == 'rollbot':
+			for col, verts in mover['traj'].items():
+				surface = Poly3DCollection([], facecolors=video_opt['color_key'][col], edgecolors='black', 
+					linewidths=1, alpha=1)
+				ax1.add_collection3d(surface)
+				surfaces.append(surface)
 
 	#This function updates the figure for each frame i of the animation
 	def animate(i):
-		if i % 500 == 0:
-			print('{0:.2f}%'.format(i/len(file_opt['section'])*100))
+
+		if i % 300 == 0:
+			print('{0:.2f}%'.format(i/len(animation_obj[0]['section'])*100))
 
 		xlist = []
 		ylist = []
@@ -250,6 +338,16 @@ def save_video(animation_obj, file_opt, video_opt):
 					ylist2.append(Y)
 					zlist2.append(Z)
 
+			if mover['type'] == 'rollbot':
+				for col, verts in mover['traj'].items():
+					tmp_verts = []
+					for face in verts:
+						tmp_face = []
+						for point in face:
+							tmp_face.append(point[i,:,:])
+						tmp_verts.append(tmp_face)
+					vertlist.append(tmp_verts)
+
 		#Update the data for all the lines
 		for lnum,line in enumerate(lines):
 			line.set_data(xlist[lnum], ylist[lnum])
@@ -260,7 +358,7 @@ def save_video(animation_obj, file_opt, video_opt):
 			surface.set_verts(vertlist[surfnum])
 
 		if video_opt['img_flag']:
-			plt.savefig(str(i)+".png")
+			plt.savefig(str(i)+".png", dpi=300)
 
 		#Update the data for all the surfaces
 		for surfnum, surface in enumerate(surfaces2):
@@ -272,10 +370,14 @@ def save_video(animation_obj, file_opt, video_opt):
 		return lines + surfaces + surfaces2
 
 	#Call the animator
-	anim = animation.FuncAnimation(fig, animate, range(len(file_opt['section'])))
-	FFwriter = animation.FFMpegWriter(fps=video_opt['video_fps'])
-	
-	#print('Starting to Save Video')
-	anim.save(video_opt['video_filename'], writer = FFwriter)
-	plt.close(fig)
-	#print('Done Saving Video!')
+	if video_opt['save_type'] == 'video':
+		anim = animation.FuncAnimation(fig, animate, range(len(animation_obj[0]['section'])))
+		FFwriter = animation.FFMpegWriter(fps=video_opt['video_fps'])
+		anim.save(video_opt['video_filename'], writer = FFwriter)
+		plt.close(fig)
+	else:
+		step = int(np.floor(len(animation_obj[0]['section'])*video_opt['animation_speed']))
+		anim = animation.FuncAnimation(fig, animate, \
+			range(0, len(animation_obj[0]['section']), step))
+	plt.show()
+

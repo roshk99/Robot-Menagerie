@@ -1,7 +1,7 @@
 from analyze_human_data import *
 
-filename = 'mocapdata01.csv'
-data_filename = 'mocapdata01'
+filename = 'mocapdata02.csv'
+data_filename = 'mocapdata02b'
 dim_transfer = [2, 0, 1]
 
 verticality_vec = ('WaistRBack', 'BackRight')

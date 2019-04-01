@@ -2,9 +2,10 @@ import numpy as np
 from run_animation import *
 import time
 
-##Single Video Generation
+###Options - Do not need to modify
+##################################
 
-#Vectors
+#Vectors to Use
 verticality_vec = ('WaistRBack', 'BackRight')
 arm_left = ('RShoulderBack', 'RWristOut')
 arm_right = ('LShoulderBack', 'LWristOut')
@@ -12,15 +13,7 @@ leg_left = ('WaistRBack', 'RAnkleOut')
 leg_right = ('WaistLBack', 'LAnkleOut')
 random_periodic = ('Random', 'Periodic')
 
-#Positions
-left_pos = np.array([[0,2,0]])
-mid_pos = np.array([[0,0,0]])
-right_pos = np.array([[0,-2,0]])
-
-#File Options
-start_ind = 0
-end_ind = 3
-filename = 'mocapdata01.npz'
+#Paths to plot for Human skeleton
 paths = [('BackTop','HeadTop'),('BackLeft','BackRight'),\
 		('WaistLBack','WaistRBack'),\
 		('RHandOut','RWristOut'), ('RWristOut','RElbowOut'), \
@@ -33,108 +26,52 @@ paths = [('BackTop','HeadTop'),('BackLeft','BackRight'),\
 		('BackTop','BackLeft'), ('BackLeft','WaistLBack'), \
 		('WaistLBack', 'LKneeOut'), ('LKneeOut', 'LAnkleOut'), \
 		('LAnkleOut', 'LToeOut')]
-file_opt = {'section': range(start_ind,end_ind), \
-		'filename': filename, 'paths': paths}
+
+#Variables to Modify#############################################################
+#################################################################################
+#Positions
+left_pos = np.array([[0,2,0]])
+mid_pos = np.array([[0,0,0]])
+right_pos = np.array([[0,-2,0]])
 
 #Video Options
-video_filename = 'test.mp4'
-video_flag = True
-img_flag = True
+video_filename = 'test01.mp4'
+save_type = 'animate' #animate or video
+animation_speed = 0.03
+img_flag = False
 video_title = ''
+
+#Mover Options
+human_mover = {'type': 'human', 'pos': mid_pos, 'paths': paths, \
+			'section': range(15000,17000), 'filename': 'mocapdata01.npz'}
+broombot_vert_right = {'type': 'broombot', 'pos': right_pos, 'vector': verticality_vec, \
+			'section': range(15000,17000), 'filename': 'mocapdata01.npz', \
+			'radius': 0.25, 'height': 0.5, 'n': 10}
+rollbot_mover = {'type': 'rollbot', 'pos': mid_pos, 'vector': random_periodic, \
+			'section': range(0,1), 'filename': 'mocapdata01.npz',\
+			'radius': 0.25, 'height': 0.2, 'stretch': 1.5}
+mover_opt = [rollbot_mover]
+
+#Do not need to modify variables below this line most of the time################
+#################################################################################
+
+#Video Options
 video_fps = 120
 ffmpeg_path = 'C:/ffmpeg/bin/ffmpeg'
-elevation = 15
+elevation = 23
 azimuth = -180
 plane_start = -5
 plane_end = 5
 height_max = 5
-color_key = ['green', 'red']		
-video_opt = {'video_filename': video_filename, 'video_flag': video_flag, \
+color_key = ['green', 'red']
+
+#Create inputs to function	
+video_opt = {'video_filename': video_filename, 'save_type': save_type, \
 			'video_title': video_title, 'video_fps': video_fps, \
 			'ffmpeg_path': ffmpeg_path, 'elevation': elevation, \
 			'azimuth': azimuth, 'plane_start': plane_start, \
 			'plane_end': plane_end, 'height_max': height_max, \
-			'color_key': color_key, 'img_flag': img_flag}
+			'color_key': color_key, 'img_flag': img_flag, \
+			'animation_speed': animation_speed}
 
-#Mover Options
-mover1 = {'type': 'human', 'pos': mid_pos}
-mover2 = {'type': 'broombot', 'pos': left_pos + left_pos, 'vector': verticality_vec, \
-			'radius': 0.25, 'height': 0.5, 'n': 10}
-mover3 = {'type': 'broombot', 'pos': left_pos, 'vector': arm_left, \
-			'radius': 0.25, 'height': 0.5, 'n': 10}
-mover4 = {'type': 'broombot', 'pos': right_pos, 'vector': arm_right, \
-			'radius': 0.25, 'height': 0.5, 'n': 10}
-mover5 = {'type': 'broombot', 'pos': right_pos + right_pos, 'vector': leg_left, \
-			'radius': 0.25, 'height': 0.5, 'n': 10}
-mover_opt = [mover1, mover2, mover3, mover4, mover5]
-
-run_animation(file_opt, video_opt, mover_opt)
-end = time.clock()
-
-########################################################################################
-##Multiple Video Generation
-
-# code1 = ['A', 'V', 'L']
-# start_ind_vec = [0, 3000, 23000]
-# end_ind_vec = [3000, 7000, 26000]
-# code2 = ['V', 'AL', 'AR', 'LL', 'LR', 'RP']
-# vectors = [verticality_vec, arm_left, arm_right, leg_left, leg_right, random_periodic]
-
-# counter = 1
-# for ind1 in range(3):
-# 	for ind2 in range(6):
-# 		for ind3 in range(6):
-# 			start = time.clock()
-# 			if counter > 54:
-# 				#File Options
-# 				start_ind = start_ind_vec[ind1]
-# 				end_ind = end_ind_vec[ind1]
-# 				filename = 'mocapdata01.npz'
-# 				paths = [('BackTop','HeadTop'),('BackLeft','BackRight'),\
-# 						('WaistLBack','WaistRBack'),\
-# 						('RHandOut','RWristOut'), ('RWristOut','RElbowOut'), \
-# 						('RElbowOut', 'RShoulderBack'), ('RShoulderBack', 'BackTop'), \
-# 						('BackTop','BackRight'), ('BackRight','WaistRBack'), \
-# 						('WaistRBack', 'RKneeOut'), ('RKneeOut', 'RAnkleOut'), \
-# 						('RAnkleOut', 'RToeOut'), \
-# 						('LHandOut','LWristOut'), ('LWristOut','LElbowOut'), \
-# 						('LElbowOut', 'LShoulderBack'), ('LShoulderBack', 'BackTop'), \
-# 						('BackTop','BackLeft'), ('BackLeft','WaistLBack'), \
-# 						('WaistLBack', 'LKneeOut'), ('LKneeOut', 'LAnkleOut'), \
-# 						('LAnkleOut', 'LToeOut')]
-# 				file_opt = {'section': range(start_ind,end_ind), \
-# 						'filename': filename, 'paths': paths}
-
-# 				#Video Options
-# 				video_filename = code1[ind1] + '_' + code2[ind2] + '_' + code2[ind3] + '.mp4'
-# 				video_flag = True
-# 				video_title = ''
-# 				video_fps = 120
-# 				ffmpeg_path = 'C:/ffmpeg/bin/ffmpeg'
-# 				elevation = 15
-# 				azimuth = -180
-# 				plane_start = -5
-# 				plane_end = 5
-# 				height_max = 5
-# 				color_key = ['green', 'red']		
-# 				video_opt = {'video_filename': video_filename, 'video_flag': video_flag, \
-# 							'video_title': video_title, 'video_fps': video_fps, \
-# 							'ffmpeg_path': ffmpeg_path, 'elevation': elevation, \
-# 							'azimuth': azimuth, 'plane_start': plane_start, \
-# 							'plane_end': plane_end, 'height_max': height_max, \
-# 							'color_key': color_key}
-
-# 				#Mover Options
-# 				mover1 = {'type': 'human', 'pos': mid_pos}
-# 				mover2 = {'type': 'broombot', 'pos': left_pos, 'vector': vectors[ind2], \
-# 					'radius': 0.25, 'height': 0.5, 'n': 10}
-# 				mover3 = {'type': 'broombot', 'pos': right_pos, 'vector': vectors[ind3], \
-# 					'radius': 0.25, 'height': 0.5, 'n': 10}
-# 				mover_opt = [mover1, mover2, mover3]
-
-# 				###############################################################################################
-# 				run_animation(file_opt, video_opt, mover_opt)
-# 				end = time.clock()
-# 				print('Finished Video Number {0} ({1}) in {2:.2f} min'.format(counter, \
-# 					video_filename[:-4], (end-start)/60))
-# 			counter = counter + 1
+run_animation(video_opt, mover_opt)
