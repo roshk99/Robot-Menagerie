@@ -71,29 +71,29 @@ This document will explain step-by-step the process for obtaining data from the 
 
 ### Step 2: Video Generation
 1. `main.py` is the file you want to run.
-2. Uncomment the section (Single Video Generation or Multiple Video Generation based on what you want to do)
-3. The vectors at the top should match the vectors from `human_data_import.py` and are the options you can use for the movers below.
-4. You can add/change the list of positions, which are the options you can use for the movers below.
-5. File Options:
-	* `start_ind` and `end_ind` are the portions of motion capture you wish to use
-	* `filename` should match the `.npz` file you saved from Step 1
-	* `paths` controls what points are connected in the skeleton
-6. Video Options:
-	* `video_filename` is the name of the `.mp4` video you want to create
-	* `video_flag` is True if you want to create a video
-	* `img_flag` is True if you want to save each frame as an image
+2. The options section contains the vectors from `human_data_import.py` and the `paths` to connect when plotting the human skeleton
+3. The Variables to Modify section contains the options you will modify for the basic use case:
+	* The positions can be renamed and added to as necessary.
+	* Video Options
+		* `video_filename` is the name of the `.mp4` video you want to create
+		* `save_type` should be `animate` if you want to just view the animation or `video` if you want to save a video
+		* `animation_speed` contains the fraction of the total points you want to use for your step size as you are animating the data. Default is 0.03.
+		* `img_flag` is True if you want to save each frame as an image
+	* Mover Options. The format for each mover type is:
+		* Human:  `{'type': 'human', 'pos': mid_pos, 'paths': paths, 'section': range(15000,17000), 'filename': 'mocapdata01.npz'}`
+		* Broombot: `{'type': 'broombot', 'pos': right_pos, 'vector': verticality_vec, 'section': range(15000,17000), 'filename': 'mocapdata01.npz', 'radius': 0.25, 'height': 0.5, 'n': 10}`
+		* Rollbot: `{'type': 'rollbot', 'pos': mid_pos, 'vector': random_periodic, 'section': range(0,1), 'filename': 'mocapdata01.npz', 'radius': 0.25, 'height': 0.2, 'stretch': 1.5}`
+		* Make sure all movers you want to plot are put into the list `mover_opt`
+		* The `pos` field should contain one the positions from above.
+		* The `vector` field should contain one of the vectors from above
+		* The `section` field should contain a range of indices you want to plot. Each mover should have a the same length list here
+		* The `filename` field should contain the `npz` file name saved in the same directory
+		* The remaining fields modify the appearance of each mover.
+4. Additional variables included:
 	* `video_fps` is the frames per second of the video. 120fps is what Motive uses
-	* `ffmpeg_path` should be the path to `ffmpeg.exe` on your computer with an extra `\ffmpeg` added
 	* `elevation` and `azimuth` are the perspective of the video in degrees. 15 and -180 are recommended
 	* `plane_start`, `plane_end`, and `height_max` control the ground plane and z-axis limits. -5, 5, and 5 are recommended
 	* `color_key` must have at least 2 elements and contains the colors scheme for the movers
-7. Mover Options:
-	* You should include the movers here. The format for each mover type is:
-		* `{'type': 'human', 'pos': mid_pos}`
-		* `{'type': 'broombot', 'pos': left_pos, 'vector': vectors[ind2], 'radius': 0.25, 'height': 0.5, 'n': 10}`
-	* Make sure all movers you want to plot are put into the list `mover_opt`
-8. Multiple Video Generation
-	* There are three different for-loops here for generating videos with different motion capture segments, left-movers, and right-movers. Feel free to customize as you like.
 
 ### Running the Simulation
 Simply run the file `main.py` to create the simulation

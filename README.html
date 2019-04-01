@@ -1133,37 +1133,35 @@ body .markdown-body
 <h3 id="step-2-video-generation">Step 2: Video Generation<a class="headerlink" href="#step-2-video-generation" title="Permanent link"></a></h3>
 <ol>
 <li><code>main.py</code> is the file you want to run.</li>
-<li>Uncomment the section (Single Video Generation or Multiple Video Generation based on what you want to do)</li>
-<li>The vectors at the top should match the vectors from <code>human_data_import.py</code> and are the options you can use for the movers below.</li>
-<li>You can add/change the list of positions, which are the options you can use for the movers below.</li>
-<li>File Options:<ul>
-<li><code>start_ind</code> and <code>end_ind</code> are the portions of motion capture you wish to use</li>
-<li><code>filename</code> should match the <code>.npz</code> file you saved from Step 1</li>
-<li><code>paths</code> controls what points are connected in the skeleton</li>
+<li>The options section contains the vectors from <code>human_data_import.py</code> and the <code>paths</code> to connect when plotting the human skeleton</li>
+<li>The Variables to Modify section contains the options you will modify for the basic use case:<ul>
+<li>The positions can be renamed and added to as necessary.</li>
+<li>Video Options<ul>
+<li><code>video_filename</code> is the name of the <code>.mp4</code> video you want to create</li>
+<li><code>save_type</code> should be <code>animate</code> if you want to just view the animation or <code>video</code> if you want to save a video</li>
+<li><code>animation_speed</code> contains the fraction of the total points you want to use for your step size as you are animating the data. Default is 0.03.</li>
+<li><code>img_flag</code> is True if you want to save each frame as an image</li>
 </ul>
 </li>
-<li>Video Options:<ul>
-<li><code>video_filename</code> is the name of the <code>.mp4</code> video you want to create</li>
-<li><code>video_flag</code> is True if you want to create a video</li>
-<li><code>img_flag</code> is True if you want to save each frame as an image</li>
+<li>Mover Options. The format for each mover type is:<ul>
+<li>Human:  <code>{'type': 'human', 'pos': mid_pos, 'paths': paths, 'section': range(15000,17000), 'filename': 'mocapdata01.npz'}</code></li>
+<li>Broombot: <code>{'type': 'broombot', 'pos': right_pos, 'vector': verticality_vec, 'section': range(15000,17000), 'filename': 'mocapdata01.npz', 'radius': 0.25, 'height': 0.5, 'n': 10}</code></li>
+<li>Rollbot: <code>{'type': 'rollbot', 'pos': mid_pos, 'vector': random_periodic, 'section': range(0,1), 'filename': 'mocapdata01.npz', 'radius': 0.25, 'height': 0.2, 'stretch': 1.5}</code></li>
+<li>Make sure all movers you want to plot are put into the list <code>mover_opt</code></li>
+<li>The <code>pos</code> field should contain one the positions from above.</li>
+<li>The <code>vector</code> field should contain one of the vectors from above</li>
+<li>The <code>section</code> field should contain a range of indices you want to plot. Each mover should have a the same length list here</li>
+<li>The <code>filename</code> field should contain the <code>npz</code> file name saved in the same directory</li>
+<li>The remaining fields modify the appearance of each mover.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Additional variables included:<ul>
 <li><code>video_fps</code> is the frames per second of the video. 120fps is what Motive uses</li>
-<li><code>ffmpeg_path</code> should be the path to <code>ffmpeg.exe</code> on your computer with an extra <code>\ffmpeg</code> added</li>
 <li><code>elevation</code> and <code>azimuth</code> are the perspective of the video in degrees. 15 and -180 are recommended</li>
 <li><code>plane_start</code>, <code>plane_end</code>, and <code>height_max</code> control the ground plane and z-axis limits. -5, 5, and 5 are recommended</li>
 <li><code>color_key</code> must have at least 2 elements and contains the colors scheme for the movers</li>
-</ul>
-</li>
-<li>Mover Options:<ul>
-<li>You should include the movers here. The format for each mover type is:<ul>
-<li><code>{'type': 'human', 'pos': mid_pos}</code></li>
-<li><code>{'type': 'broombot', 'pos': left_pos, 'vector': vectors[ind2], 'radius': 0.25, 'height': 0.5, 'n': 10}</code></li>
-</ul>
-</li>
-<li>Make sure all movers you want to plot are put into the list <code>mover_opt</code></li>
-</ul>
-</li>
-<li>Multiple Video Generation<ul>
-<li>There are three different for-loops here for generating videos with different motion capture segments, left-movers, and right-movers. Feel free to customize as you like.</li>
 </ul>
 </li>
 </ol>
